@@ -27,14 +27,18 @@ class PostController extends Controller
             'body' => $request->body,
         ]);
 
-        return response()->json($post, 201);
+        return redirect()->back()->with('status', 'Post created successfully!');
     }
 
     public function show(Post $post)
     {
         return $post->load('user', 'comments');
     }
-
+    public function edit(Post $post)
+    {
+        Gate::authorize('update', $post);
+        return view('posts.edit', compact('post'));
+    }
     public function update(Request $request, Post $post)
     {
         Gate::authorize('update', $post);
@@ -46,8 +50,9 @@ class PostController extends Controller
 
         $post->update($request->only('title', 'body'));
 
-        return response()->json($post);
+        return redirect()->route('home')->with('status', 'Post updated successfully!');
     }
+
 
     public function destroy(Post $post)
     {
@@ -55,6 +60,6 @@ class PostController extends Controller
 
         $post->delete();
 
-        return response()->json(null, 204);
+        return redirect()->back()->with('status', 'Post deleted successfully!');
     }
 }

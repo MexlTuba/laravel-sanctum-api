@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Http\Request;
@@ -23,7 +22,7 @@ class CommentController extends Controller
             'body' => $request->body,
         ]);
 
-        return response()->json($comment, 201);
+        return redirect()->back()->with('status', 'Comment added successfully!');
     }
 
     public function update(Request $request, Comment $comment)
@@ -36,8 +35,9 @@ class CommentController extends Controller
 
         $comment->update($request->only('body'));
 
-        return response()->json($comment);
+        return redirect()->route('home')->with('status', 'Comment updated successfully!');
     }
+
 
     public function destroy(Comment $comment)
     {
@@ -45,6 +45,12 @@ class CommentController extends Controller
 
         $comment->delete();
 
-        return response()->json(null, 204);
+        return redirect()->back()->with('status', 'Comment deleted successfully!');
+    }
+
+    public function edit(Comment $comment)
+    {
+        Gate::authorize('update', $comment);
+        return view('comments.edit', compact('comment'));
     }
 }
